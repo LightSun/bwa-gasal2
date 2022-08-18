@@ -6,8 +6,9 @@
  */
 #include <stdio.h>
 #include <emmintrin.h>
+#include "common.h"
 
-//uint8_t buff[32] __aligned__;
+//uint8_t buff[32] align_16;
 
 int main(int argc, char* argv[]) {
 	int error = 0;

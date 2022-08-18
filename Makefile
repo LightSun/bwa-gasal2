@@ -3,13 +3,13 @@ CC=gcc
 VPATH=src:obj:lib
 OBJ_DIR=./obj/
 LIB_DIR=./lib/
-CUDA_LIB_DIR=/usr/local/cuda-10.0/lib64/
+CUDA_LIB_DIR=/usr/local/cuda-11.1/lib64/
 GASAL_LIB_DIR = ./GASAL2/lib/
 GASAL_INCLUDE_DIR = ./GASAL2/include/
 #SHD_DIR=./src/shd_filter/
 #CC=clang --analyze
 CFLAGS=-g -Wall -Wno-unused-function -O2 -msse4.2 -std=c++11 -fpermissive
-NVCCFLAGS = -g -lineinfo --gpu-architecture=compute_35 --gpu-code=sm_35 -O3 -Xcompiler -Wall -Xptxas -Werror --default-stream per-thread 
+NVCCFLAGS = -g -lineinfo --gpu-architecture=compute_80 --gpu-code=sm_80 -O3 -Xcompiler -Wall -Xptxas -Werror --default-stream per-thread 
 WRAP_MALLOC=-DUSE_MALLOC_WRAPPERS
 AR=ar
 DFLAGS=-DHAVE_PTHREAD $(WRAP_MALLOC)
@@ -42,6 +42,9 @@ VALGRIND=valgrind
 NVPROF=
 NVPROF=nvprof --profile-api-trace none -s -f -o /tmp/.nvprof/$(ANALYSIS_FILENAME).nvprof
 
+FQ_PATH_BIG=/media/heaven7/h7/shengxin/hs37d5.fa
+FQ_PATH_SMALL=/media/heaven7/h7/shengxin/hg19mini.fa
+
 ifeq ($(shell uname -s),Linux)
 	LIBS += -lrt
 endif
@@ -63,7 +66,7 @@ endif
 
 
 short-index: all 
-		./$(PROG) index /data/work/jlevy/hg19_short/chr01.fasta
+		./$(PROG) index $(FQ_PATH_SMALL)
 
 short: all
 		$(VALGRIND) ./$(PROG) gase_aln -g -t 12 -l 150 -v 4 /data/work/jlevy/hg19_short/chr1p1.fasta /data/work/jlevy/srr_short4/srr150_1.fastq /data/work/jlevy/srr_short4/srr150_2.fastq > short.log 

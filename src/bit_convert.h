@@ -9,10 +9,8 @@
 #define BIT_CONVERT_H_
 
 #include <stdint.h>
+#include "common.h"
 
-#ifndef __aligned__
-	#define __aligned__ __attribute__((aligned(16)))
-#endif
 #ifdef __cplusplus
 extern "C" {
 #endif

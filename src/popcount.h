@@ -8,12 +8,9 @@
 #ifndef POPCOUNT_H_
 #define POPCOUNT_H_
 
-#ifndef __aligned__
-	#define __aligned__ __attribute__((aligned(16)))
-#endif
-
 #include <stdint.h>
 #include <nmmintrin.h>
+#include "common.h"
 
 #ifdef __cplusplus
 extern "C" {

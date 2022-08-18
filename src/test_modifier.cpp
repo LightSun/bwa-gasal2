@@ -24,18 +24,18 @@ int main(int argc, char* argv[]) {
 		printf("Usage: %s <size> <e> <injected_error> <function>\n", argv[0]);
 		exit(-1);
 	}
-	int err = atoi(argv[3]);
+    int size = atoi(argv[1]);
 	int testErr = atoi(argv[2]);
-	int size = atoi(argv[1]);
+    int err = atoi(argv[3]);
 	int func = atoi(argv[4]);
 	unsigned long long ret;
 	memset(DNA+128-err,'A',err);
 	if (func == 0) {
-		ret = test_alligner_random(&bit_vec_filter_sse1, DNA, size, testErr, err, 1000000ULL);
+        ret = test_alligner_random1(&bit_vec_filter_sse1, DNA, size, testErr, err, 1000000ULL);
 	} else if (func == 1) {
-		ret = test_alligner_random(&bit_vec_filter_no_flipping_sse1, DNA, size, testErr, err, 1000000ULL);
+        ret = test_alligner_random1(&bit_vec_filter_no_flipping_sse1, DNA, size, testErr, err, 1000000ULL);
 	} else if (func == 2) {
-		test_alligner_random(&bit_vec_filter_sse1, &bit_vec_filter_no_flipping_sse1, DNA, size, testErr, err);
+        test_alligner_random2(&bit_vec_filter_sse1, &bit_vec_filter_no_flipping_sse1, DNA, size, testErr, err);
 	} else if (func == 3) {
 		char * modDNA = (char*)malloc(sizeof(char) * 200);
 		char * _refDNA = (char*)malloc(sizeof(char) * 200);

@@ -34,7 +34,9 @@ int printed_DNA;
 
 //srand(time(0));
 
-unsigned long long test_alligner_random(int (*fAlligner)(char *, char *, int, int), char* DNA, int length, int testErr, int err, unsigned long long iterations) {
+unsigned long long test_alligner_random1(int (*fAlligner)(char *, char *, int, int),
+                                         char* DNA, int length, int testErr,
+                                         int err, unsigned long long iterations) {
 	char* _refDNA = DNA;
 	char* _modDNA = (char*)malloc(sizeof(char) * length);
 	memcpy(_modDNA, DNA, length);
@@ -50,7 +52,7 @@ unsigned long long test_alligner_random(int (*fAlligner)(char *, char *, int, in
 	return ret;
 }
 
-unsigned long long test_alligner_random(int (*fAlligner0)(char *, char *, int, int), int (*fAlligner1)(char *, char *, int, int), char* DNA, int length, int testErr, int err) {
+unsigned long long test_alligner_random2(int (*fAlligner0)(char *, char *, int, int), int (*fAlligner1)(char *, char *, int, int), char* DNA, int length, int testErr, int err) {
 	char* _refDNA = DNA;
 	char* _modDNA = (char*)malloc(sizeof(char) * length);
 	memcpy(_modDNA, DNA, length);
@@ -101,7 +103,8 @@ unsigned long long test_alligner_random(int (*fAlligner0)(char *, char *, int, i
 	return ret1;
 }
 
-unsigned long long test_alligner_random(int (*fAlligner)(char *, char *, int, int), char* DNA, int length, int testErr, int err) {
+unsigned long long test_alligner_random3(int (*fAlligner)(char *, char *, int, int),
+                                         char* DNA, int length, int testErr, int err) {
 	char* _refDNA = DNA;
 	char* _modDNA = (char*)malloc(sizeof(char) * length);
 	memcpy(_modDNA, DNA, length);

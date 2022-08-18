@@ -16,7 +16,7 @@
 #include "ksort.h"
 #include "utils.h"
 #include "vector_filter.h"
-
+#include "common.h"
 
 #ifdef USE_MALLOC_WRAPPERS
 #  include "malloc_wrap.h"
@@ -49,7 +49,7 @@ static const bntseq_t *global_bns = 0; // for debugging only
 
 mem_opt_t *mem_opt_init() {
 	mem_opt_t *o;
-	o = calloc(1, sizeof(mem_opt_t));
+    o = (mem_opt_t*)calloc(1, sizeof(mem_opt_t));
 	o->flag = 0;
 	o->a = 1;
 	o->b = 4;
@@ -107,9 +107,9 @@ KSORT_INIT(mem_intv, bwtintv_t, intv_lt)
 
 static smem_aux_t *smem_aux_init() {
 	smem_aux_t *a;
-	a = calloc(1, sizeof(smem_aux_t));
-	a->tmpv[0] = calloc(1, sizeof(bwtintv_v));
-	a->tmpv[1] = calloc(1, sizeof(bwtintv_v));
+    a = (smem_aux_t*)calloc(1, sizeof(smem_aux_t));
+    a->tmpv[0] = (bwtintv_v*)calloc(1, sizeof(bwtintv_v));
+    a->tmpv[1] = (bwtintv_v*)calloc(1, sizeof(bwtintv_v));
 	return a;
 }
 
@@ -371,7 +371,7 @@ KBTREE_INIT(chn, mem_chain_t, chain_cmp)
 		if (y >= 0 && x - y <= opt->w && y - x <= opt->w && x - last->len < opt->max_chain_gap && y - last->len < opt->max_chain_gap) { // grow the chain
 			if (c->n == c->m) {
 				c->m <<= 1;
-				c->seeds = realloc(c->seeds, c->m * sizeof(mem_seed_t));
+                c->seeds = (mem_seed_t*)realloc(c->seeds, c->m * sizeof(mem_seed_t));
 			}
 			c->seeds[c->n++] = *p;
 			return 1;
@@ -435,7 +435,7 @@ mem_chain_v mem_chain(const mem_opt_t *opt, const bwt_t *bwt, const bntseq_t *bn
 	tree = kb_init(chn, KB_DEFAULT_SIZE);
 
 	aux = buf ? (smem_aux_t*) buf : smem_aux_init();
-	mem_collect_intv(opt, bwt, len, seq, aux);
+    mem_collect_intv((mem_opt_t *)opt, bwt, len, seq, aux);
 	for (i = 0, b = e = l_rep = 0; i < aux->mem.n; ++i) { // compute frac_rep
 		bwtintv_t *p = &aux->mem.a[i];
 		int sb = (p->info >> 32), se = (uint32_t) p->info;
@@ -473,7 +473,7 @@ mem_chain_v mem_chain(const mem_opt_t *opt, const bwt_t *bwt, const bntseq_t *bn
 			if (to_add) { // add the seed as a new chain
 				tmp.n = 1;
 				tmp.m = 4;
-				tmp.seeds = calloc(tmp.m, sizeof(mem_seed_t));
+                tmp.seeds = (mem_seed_t*)calloc(tmp.m, sizeof(mem_seed_t));
 				tmp.seeds[0] = s;
 				tmp.rid = rid;
 				tmp.is_alt = !!bns->anns[rid].is_alt;
@@ -830,6 +830,7 @@ int mem_seed_sw(const mem_opt_t *opt, const bntseq_t *bns, const uint8_t *pac, i
 	return x.score;
 }
 
+
 void mem_shd_flt_chained_seeds(const mem_opt_t *opt, const bntseq_t *bns, const uint8_t *pac, int l_query, const uint8_t *query, int n_chn, mem_chain_t *a) 
 {
 	int i, j, k;
@@ -855,7 +856,7 @@ void mem_shd_flt_chained_seeds(const mem_opt_t *opt, const bntseq_t *bns, const 
 				int rid;
 				int qbeg = (qe - 5) > 0 ? (qe - 5) : 0;
 				int qend = (qbeg + 128) <= l_query ? (qbeg + 128) : l_query;
-				char read_display[320] __aligned__;
+                char read_display[320] align_16;
 				{
 					int q, f;
 					for (q = qbeg, f = 0; f < 320; q++, f++) {
@@ -865,7 +866,7 @@ void mem_shd_flt_chained_seeds(const mem_opt_t *opt, const bntseq_t *bns, const 
 							read_display[f] = '\0';
 					}
 				}
-				char read_t[320] __aligned__;
+                char read_t[320] align_16;
 				//strcpy(read_t, "TCCTCCAAGAAGATATGTAGTTGGTAAATAAACATAAGAAAAGATGCTCAAAACAATATGTTATTAGGGAACTTCAAATTAACATGATGAGATACCATTATACACCAATTAGAATGTCTAATATCTGA");
 				int q, f;
 				for (q = qbeg, f = 0; f < 320; q++, f++) {
@@ -884,7 +885,7 @@ void mem_shd_flt_chained_seeds(const mem_opt_t *opt, const bntseq_t *bns, const 
 						rbeg = l_pac;
 				}
 				rseq = bns_fetch_seq(bns, pac, &rbeg, mid, &rend, &rid);
-				char ref_display[320] __aligned__;
+                char ref_display[320] align_16;
 				{
 					int r, f;
 					for (r = 0, f = 0; f < 320; r++, f++) {
@@ -896,7 +897,7 @@ void mem_shd_flt_chained_seeds(const mem_opt_t *opt, const bntseq_t *bns, const 
 							ref_display[f] = '\0';
 					}
 				}
-				char ref_t[320] __aligned__;
+                char ref_t[320] align_16;
 				//strcpy(ref_t, "TCCTCAAAGAAGATATGTAGTTGGTAAATAAACATAAGAAAAGATGCTCAAAACAATATGTTATTAGGGAACTTCAAATTAACATGATGAGATACCATTATACACCAATTAGAATGTCTAATATCTGA");
 				int r;
 				for (r = 0, f = 0; f < 320; r++, f++) {
@@ -923,7 +924,7 @@ void mem_shd_flt_chained_seeds(const mem_opt_t *opt, const bntseq_t *bns, const 
 				int rid;
 				int qend = (qb + 5) < l_query ? (qb + 5) : l_query;
 				int qbeg = (qend - 128) > 0 ? (qend - 128) : 0;
-				char read_display[320] __aligned__;
+                char read_display[320] align_16;
 				{
 					int q, f;
 					for (q = qend - 1, f = 0; f < 320; q--, f++) {
@@ -933,7 +934,7 @@ void mem_shd_flt_chained_seeds(const mem_opt_t *opt, const bntseq_t *bns, const 
 							read_display[f] = '\0';
 					}
 				}
-				char read_t[320] __aligned__;
+                char read_t[320] align_16;
 				int q, f;
 				for (q = qend - 1, f = 0; f < 320; q--, f++) {
 					if (q >= qbeg)
@@ -951,7 +952,7 @@ void mem_shd_flt_chained_seeds(const mem_opt_t *opt, const bntseq_t *bns, const 
 						rbeg = l_pac;
 				}
 				rseq = bns_fetch_seq(bns, pac, &rbeg, mid, &rend, &rid);
-				char ref_display[320] __aligned__;
+                char ref_display[320] align_16;
 				{
 					int r, f;
 					for (r = (rend - rbeg) - 1, f = 0; f < 320; r--, f++) {
@@ -961,7 +962,7 @@ void mem_shd_flt_chained_seeds(const mem_opt_t *opt, const bntseq_t *bns, const 
 							ref_display[f] = '\0';
 					}
 				}
-				char ref_t[320] __aligned__;
+                char ref_t[320] align_16;
 				int r;
 				for (r = (rend - rbeg) - 1, f = 0; f < 320; r--, f++) {
 					if (r >= 0)
@@ -1084,7 +1085,7 @@ void mem_chain2aln(const mem_opt_t *opt, const bntseq_t *bns, const uint8_t *pac
 	    assert(c->rid == rid);
     */
    
-	srt = malloc(c->n * 8);
+    srt = (uint64_t*)malloc(c->n * 8);
 	for (i = 0; i < c->n; ++i)
 		srt[i] = (uint64_t)c->seeds[i].score<<32 | i;
 	ks_introsort_64(c->n, srt);
@@ -1227,9 +1228,9 @@ void mem_chain2aln(const mem_opt_t *opt, const bntseq_t *bns, const uint8_t *pac
 				{
 					// J.L. 2018-12-20 16:17 DONE : create some function to add a single base
 					// J.L. 2019-12-20 12:35  emulating non-extensible memory host: curr_gpu_batch->gpu_storage->extensible_host_unpacked_target_batch->data[curr_gpu_batch->n_target_batch++] = 4;
-                    curr_gpu_batch->n_target_batch = gasal_host_batch_addbase(curr_gpu_batch->gpu_storage, 
-                                                    curr_gpu_batch->n_target_batch, 
-                                                    4,
+                    curr_gpu_batch->n_target_batch = (int)gasal_host_batch_addbase(curr_gpu_batch->gpu_storage,
+                                                    (uint32_t)curr_gpu_batch->n_target_batch,
+                                                    (const char)4,
                                                     TARGET);
 					//fprintf(stderr, "curr_gpu_batch->n_target_batch goes from %d to %d\n", tmp, curr_gpu_batch->n_target_batch);
 				} else {
@@ -1967,7 +1968,7 @@ mem_aln_t mem_reg2aln(const mem_opt_t *opt, const bntseq_t *bns, const uint8_t *
     }
     qb = ar->qb, qe = ar->qe;
     rb = ar->rb, re = ar->re;
-    query = malloc(l_query);
+    query = (uint8_t*)malloc(l_query);
     for (i = 0; i < l_query; ++i) // convert to the nt4 encoding
         query[i] = query_[i] < 5 ? query_[i] : nst_nt4_table[(int) query_[i]];
     a.mapq = ar->secondary < 0 ? mem_approx_mapq_se(opt, ar) : 0;
@@ -2024,7 +2025,7 @@ mem_aln_t mem_reg2aln(const mem_opt_t *opt, const bntseq_t *bns, const uint8_t *
         int clip5, clip3;
         clip5 = is_rev ? l_query - qe : qb;
         clip3 = is_rev ? qb : l_query - qe;
-        a.cigar = realloc(a.cigar, 4 * (a.n_cigar + 2) + l_MD);
+        a.cigar = (uint32_t*)realloc(a.cigar, 4 * (a.n_cigar + 2) + l_MD);
         if (clip5) {
             memmove(a.cigar + 1, a.cigar, a.n_cigar * 4 + l_MD); // make room for 5'-end clipping
             a.cigar[0] = clip5 << 4 | 3;
@@ -2058,6 +2059,7 @@ typedef struct {
     int64_t n_processed;
 } worker_t;
 
+//void (*func)(void*, int, int, int, int)
 void worker1(void *data, int i, int tid, int batch_size, int total_reads, gasal_gpu_storage_v *gpu_storage_vec) {
     worker_t *w = (worker_t*) data;
     
@@ -2101,7 +2103,7 @@ void mem_process_seqs(const mem_opt_t *opt, const bwt_t *bwt, const bntseq_t *bn
     ctime = cputime();
     rtime = realtime();
     global_bns = bns;
-    w.regs = malloc(n * sizeof(mem_alnreg_v));
+    w.regs = (mem_alnreg_v*)malloc(n * sizeof(mem_alnreg_v));
     w.opt = opt;
     w.bwt = bwt;
     w.bns = bns;
@@ -2109,7 +2111,7 @@ void mem_process_seqs(const mem_opt_t *opt, const bwt_t *bwt, const bntseq_t *bn
     w.seqs = seqs;
     w.n_processed = n_processed;
     w.pes = &pes[0];
-    w.aux = malloc(opt->n_threads * sizeof(smem_aux_t));
+    w.aux = (smem_aux_t**)malloc(opt->n_threads * sizeof(smem_aux_t));
     for (i = 0; i < opt->n_threads; ++i)
         w.aux[i] = smem_aux_init();
 

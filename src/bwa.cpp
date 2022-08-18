@@ -52,7 +52,7 @@ bseq1_t *bseq_read(int chunk_size, int *n_, void *ks1_, void *ks2_)
 		}
 		if (n >= m) {
 			m = m? m<<1 : 256;
-			seqs = realloc(seqs, m * sizeof(bseq1_t));
+            seqs = (bseq1_t*)realloc(seqs, m * sizeof(bseq1_t));
 		}
 		trim_readno(&ks->name);
 		kseq2bseq1(ks, &seqs[n]);
@@ -230,7 +230,7 @@ char *bwa_idx_infer_prefix(const char *hint)
 	int l_hint;
 	FILE *fp;
 	l_hint = strlen(hint);
-	prefix = malloc(l_hint + 3 + 4 + 1);
+    prefix = (char*)malloc(l_hint + 3 + 4 + 1);
 	strcpy(prefix, hint);
 	strcpy(prefix + l_hint, ".64.bwt");
 	if ((fp = fopen(prefix, "rb")) != 0) {
@@ -259,7 +259,7 @@ bwt_t *bwa_idx_load_bwt(const char *hint)
 		if (bwa_verbose >= 1) fprintf(stderr, "[E::%s] fail to locate the index files\n", __func__);
 		return 0;
 	}
-	tmp = calloc(strlen(prefix) + 5, 1);
+    tmp = (char*)calloc(strlen(prefix) + 5, 1);
 	strcat(strcpy(tmp, prefix), ".bwt"); // FM-index
 	bwt = bwt_restore_bwt(tmp);
 	strcat(strcpy(tmp, prefix), ".sa");  // partial suffix array (SA)
@@ -277,7 +277,7 @@ bwaidx_t *bwa_idx_load_from_disk(const char *hint, int which)
 		if (bwa_verbose >= 1) fprintf(stderr, "[E::%s] fail to locate the index files\n", __func__);
 		return 0;
 	}
-	idx = calloc(1, sizeof(bwaidx_t));
+    idx = (bwaidx_t*)calloc(1, sizeof(bwaidx_t));
 	if (which & BWA_IDX_BWT) idx->bwt = bwa_idx_load_bwt(hint);
 	if (which & BWA_IDX_BNS) {
 		int i, c;
@@ -287,7 +287,7 @@ bwaidx_t *bwa_idx_load_from_disk(const char *hint, int which)
 		if (bwa_verbose >= 3)
 			fprintf(stderr, "[M::%s] read %d ALT contigs\n", __func__, c);
 		if (which & BWA_IDX_PAC) {
-			idx->pac = calloc(idx->bns->l_pac/4+1, 1);
+            idx->pac = (uint8_t*)calloc(idx->bns->l_pac/4+1, 1);
 			err_fread_noeof(idx->pac, 1, idx->bns->l_pac/4+1, idx->bns->fp_pac); // concatenated 2-bit encoded sequence
 			err_fclose(idx->bns->fp_pac);
 			idx->bns->fp_pac = 0;
@@ -322,14 +322,14 @@ int bwa_mem2idx(int64_t l_mem, uint8_t *mem, bwaidx_t *idx)
 	int i;
 
 	// generate idx->bwt
-	x = sizeof(bwt_t); idx->bwt = malloc(x); memcpy(idx->bwt, mem + k, x); k += x;
+    x = sizeof(bwt_t); idx->bwt = (bwt_t*)malloc(x); memcpy(idx->bwt, mem + k, x); k += x;
 	x = idx->bwt->bwt_size * 4; idx->bwt->bwt = (uint32_t*)(mem + k); k += x;
 	x = idx->bwt->n_sa * sizeof(bwtint_t); idx->bwt->sa = (bwtint_t*)(mem + k); k += x;
 
 	// generate idx->bns and idx->pac
-	x = sizeof(bntseq_t); idx->bns = malloc(x); memcpy(idx->bns, mem + k, x); k += x;
+    x = sizeof(bntseq_t); idx->bns = (bntseq_t*)malloc(x); memcpy(idx->bns, mem + k, x); k += x;
 	x = idx->bns->n_holes * sizeof(bntamb1_t); idx->bns->ambs = (bntamb1_t*)(mem + k); k += x;
-	x = idx->bns->n_seqs  * sizeof(bntann1_t); idx->bns->anns = malloc(x); memcpy(idx->bns->anns, mem + k, x); k += x;
+    x = idx->bns->n_seqs  * sizeof(bntann1_t); idx->bns->anns = (bntann1_t*)malloc(x); memcpy(idx->bns->anns, mem + k, x); k += x;
 	for (i = 0; i < idx->bns->n_seqs; ++i) {
 		idx->bns->anns[i].name = (char*)(mem + k); k += strlen(idx->bns->anns[i].name) + 1;
 		idx->bns->anns[i].anno = (char*)(mem + k); k += strlen(idx->bns->anns[i].anno) + 1;
@@ -349,10 +349,13 @@ int bwa_idx2mem(bwaidx_t *idx)
 
 	// copy idx->bwt
 	x = idx->bwt->bwt_size * 4;
-	mem = realloc(idx->bwt->bwt, sizeof(bwt_t) + x); idx->bwt->bwt = 0;
+    mem = (uint8_t*)realloc(idx->bwt->bwt, sizeof(bwt_t) + x); idx->bwt->bwt = 0;
 	memmove(mem + sizeof(bwt_t), mem, x);
 	memcpy(mem, idx->bwt, sizeof(bwt_t)); k = sizeof(bwt_t) + x;
-	x = idx->bwt->n_sa * sizeof(bwtint_t); mem = realloc(mem, k + x); memcpy(mem + k, idx->bwt->sa, x); k += x;
+    x = idx->bwt->n_sa * sizeof(bwtint_t);
+    mem = (uint8_t*)realloc(mem, k + x);
+    memcpy(mem + k, idx->bwt->sa, x);
+    k += x;
 	free(idx->bwt->sa);
 	free(idx->bwt); idx->bwt = 0;
 
@@ -360,7 +363,7 @@ int bwa_idx2mem(bwaidx_t *idx)
 	tmp = idx->bns->n_seqs * sizeof(bntann1_t) + idx->bns->n_holes * sizeof(bntamb1_t);
 	for (i = 0; i < idx->bns->n_seqs; ++i) // compute the size of heap-allocated memory
 		tmp += strlen(idx->bns->anns[i].name) + strlen(idx->bns->anns[i].anno) + 2;
-	mem = realloc(mem, k + sizeof(bntseq_t) + tmp);
+    mem = (uint8_t*)realloc(mem, k + sizeof(bntseq_t) + tmp);
 	x = sizeof(bntseq_t); memcpy(mem + k, idx->bns, x); k += x;
 	x = idx->bns->n_holes * sizeof(bntamb1_t); memcpy(mem + k, idx->bns->ambs, x); k += x;
 	free(idx->bns->ambs);
@@ -374,7 +377,7 @@ int bwa_idx2mem(bwaidx_t *idx)
 
 	// copy idx->pac
 	x = idx->bns->l_pac/4+1;
-	mem = realloc(mem, k + x);
+    mem = (uint8_t*)realloc(mem, k + x);
 	memcpy(mem + k, idx->pac, x); k += x;
 	free(idx->bns); idx->bns = 0;
 	free(idx->pac); idx->pac = 0;
@@ -457,7 +460,7 @@ char *bwa_insert_header(const char *s, char *hdr)
 	if (s == 0 || s[0] != '@') return hdr;
 	if (hdr) {
 		len = strlen(hdr);
-		hdr = realloc(hdr, len + strlen(s) + 2);
+        hdr = (char*)realloc(hdr, len + strlen(s) + 2);
 		hdr[len++] = '\n';
 		strcpy(hdr + len, s);
 	} else hdr = strdup(s);

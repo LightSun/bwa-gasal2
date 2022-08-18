@@ -7,9 +7,7 @@
 #include <boost/preprocessor/arithmetic.hpp>
 #include <boost/preprocessor/punctuation/comma_if.hpp>
 
-#ifndef __aligned__
-	#define __aligned__ __attribute__((aligned(16)))
-#endif
+#include "common.h"
 
 #define SSE_BIT_LENGTH		128
 #define SSE_BYTE_NUM		BOOST_PP_DIV(SSE_BIT_LENGTH, 8)

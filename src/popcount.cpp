@@ -13,7 +13,7 @@
 #include <assert.h>
 #endif
 
-//uint8_t POPCOUNT_4bit[16] __aligned__ = {
+//uint8_t POPCOUNT_4bit[16] align_16 = {
 ///* 0 */0,
 ///* 1 */1,
 ///* 2 */1,
@@ -31,7 +31,7 @@
 ///* e */3,
 ///* f */4 };
 
-uint8_t POPCOUNT_4bit[16] __aligned__ = {
+static uint8_t POPCOUNT_4bit[16] align_16 = {
 /* 0 */0,
 /* 1 */1,
 /* 2 */1,
@@ -49,7 +49,7 @@ uint8_t POPCOUNT_4bit[16] __aligned__ = {
 /* e */1,
 /* f */1 };
 
-uint8_t POPCOUNT_4bit11[16] __aligned__ = {
+static uint8_t POPCOUNT_4bit11[16] align_16 = {
 /* 0 */0,
 /* 1 */1,
 /* 2 */1,

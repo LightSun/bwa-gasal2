@@ -80,11 +80,11 @@
 
 #define _MAX_LENGTH_ 320
 
-char read_t[_MAX_LENGTH_] __aligned__;
-char ref_t[_MAX_LENGTH_] __aligned__;
+char read_t[_MAX_LENGTH_] align_16;
+char ref_t[_MAX_LENGTH_] align_16;
 
-//uint8_t read_bit_t[_MAX_LENGTH_ / 4] __aligned__;
-//uint8_t ref_bit_t[_MAX_LENGTH_ / 4] __aligned__;
+//uint8_t read_bit_t[_MAX_LENGTH_ / 4] align_16;
+//uint8_t ref_bit_t[_MAX_LENGTH_ / 4] align_16;
 
 int main(int argc, char* argv[]) {
 

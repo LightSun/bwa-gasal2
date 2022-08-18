@@ -10,7 +10,7 @@
 // J.L. 2019-01-10 09:50 adding extern C proto
 #ifdef __cplusplus
 extern "C"{
-	void kt_for(int n_threads, void (*func)(void*,int, int, int, int), void *data, long n);
+    void kt_for(int n_threads, void (*func)(void*,int, int, int, int, gasal_gpu_storage_v*), void *data, long n);
 }
 #endif
 
@@ -230,9 +230,10 @@ static void *ktf_worker(void *data)
 //}
 
 
-void kt_for(int n_threads, void (*func)(void*,int, int, int, int), void *data, long n)
+void kt_for(int n_threads, void (*func)(void*,int, int, int, int,gasal_gpu_storage_v*), void *data, long n)
 {
-   extern void worker1(void *data, int i, int tid, int batch_size, int total_reads, gasal_gpu_storage_v *gpu_storage_vec);
+   extern void worker1(void *data, int i, int tid, int batch_size, int total_reads,
+                       gasal_gpu_storage_v *gpu_storage_vec);
 	int i;
 	kt_for_t t;
 	pthread_t *tid;

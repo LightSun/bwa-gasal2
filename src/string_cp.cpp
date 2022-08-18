@@ -37,54 +37,50 @@
 #include <assert.h>
 #endif
 
-#ifdef ALIGN_DATA
-#	define __aligned__ __attribute__((aligned(64)))
-#else
-#	define __aligned__
-#endif
+#include "common.h"
 
 #define _MAX_LENGTH_ 320
 
-uint8_t BASE_SHIFT[16] __aligned__ = { 0x0, 0x4, 0x8, 0xc, 0x2, 0x6, 0xa, 0xe,
+static uint8_t BASE_SHIFT[16] align_16 = { 0x0, 0x4, 0x8, 0xc, 0x2, 0x6, 0xa, 0xe,
 		0x1, 0x5, 0x9, 0xd, 0x3, 0x7, 0xb, 0xf };
 
-char MASKA_16[16] __aligned__ = { 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A',
+static char MASKA_16[16] align_16 = { 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A',
 		'A', 'A', 'A', 'A', 'A', 'A', 'A' };
 
-char MASKC_16[16] __aligned__ = { 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C',
+static char MASKC_16[16] align_16 = { 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C',
 		'C', 'C', 'C', 'C', 'C', 'C', 'C' };
 
-char MASKG_16[16] __aligned__ = { 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
+static char MASKG_16[16] align_16 = { 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G', 'G',
 		'G', 'G', 'G', 'G', 'G', 'G', 'G' };
 
-char MASKT_16[16] __aligned__ = { 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T',
+static char MASKT_16[16] align_16 = { 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T', 'T',
 		'T', 'T', 'T', 'T', 'T', 'T', 'T' };
 
-uint8_t BIT_A_16[16] __aligned__ = { 0x00, 0x00, 0x00, 0x00, //A
+static uint8_t BIT_A_16[16] align_16 = { 0x00, 0x00, 0x00, 0x00, //A
 		0x00, 0x00, 0x00, 0x00, //A
 		0x00, 0x00, 0x00, 0x00, //A
 		0x00, 0x00, 0x00, 0x00 //A
 		};
 
-uint8_t BIT_C_16[16] __aligned__ = { 0x55, 0x55, 0x55, 0x55, //C
+static uint8_t BIT_C_16[16] align_16 = { 0x55, 0x55, 0x55, 0x55, //C
 		0x55, 0x55, 0x55, 0x55, //C
 		0x55, 0x55, 0x55, 0x55, //C
 		0x55, 0x55, 0x55, 0x55 //C
 		};
 
-uint8_t BIT_G_16[16] __aligned__ = { 0xaa, 0xaa, 0xaa, 0xaa, //G
+static uint8_t BIT_G_16[16] align_16 = { 0xaa, 0xaa, 0xaa, 0xaa, //G
 		0xaa, 0xaa, 0xaa, 0xaa, //G
 		0xaa, 0xaa, 0xaa, 0xaa, //G
 		0xaa, 0xaa, 0xaa, 0xaa //G
 		};
 
-uint8_t BIT_T_16[16] __aligned__ = { 0xff, 0xff, 0xff, 0xff, //T
+static uint8_t BIT_T_16[16] align_16 = { 0xff, 0xff, 0xff, 0xff, //T
 		0xff, 0xff, 0xff, 0xff, //T
 		0xff, 0xff, 0xff, 0xff, //T
 		0xff, 0xff, 0xff, 0xff  //T
 		};
 
-uint8_t LOC_MASK[64] = { 0xc0, 0xc0, 0xc0, 0xc0, //1
+static uint8_t LOC_MASK[64] = { 0xc0, 0xc0, 0xc0, 0xc0, //1
 		0xc0, 0xc0, 0xc0, 0xc0, //1
 		0xc0, 0xc0, 0xc0, 0xc0, //1
 		0xc0, 0xc0, 0xc0, 0xc0, //1
@@ -102,13 +98,13 @@ uint8_t LOC_MASK[64] = { 0xc0, 0xc0, 0xc0, 0xc0, //1
 		0x03, 0x03, 0x03, 0x03 //4
 		};
 
-char read_t[_MAX_LENGTH_] __aligned__;
-//char ref_t[_MAX_LENGTH_] __aligned__;
+char read_t[_MAX_LENGTH_] align_16;
+//char ref_t[_MAX_LENGTH_] align_16;
 
-char A_filled_t[_MAX_LENGTH_] __aligned__;
+char A_filled_t[_MAX_LENGTH_] align_16;
 
-uint8_t read_bit_t[_MAX_LENGTH_ / 8] __aligned__;
-uint8_t ref_bit_t[_MAX_LENGTH_ / 8] __aligned__;
+uint8_t read_bit_t[_MAX_LENGTH_ / 8] align_16;
+uint8_t ref_bit_t[_MAX_LENGTH_ / 8] align_16;
 
 void c_convert2bit(char *str, int length, uint8_t *bits) {
 	int i;

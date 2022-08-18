@@ -17,14 +17,14 @@ char* functions[OPT_COUNT] = { "verify", "serial", "sse3_11", "sse3_1" };
 #define _MAX_LENGTH_ 320
 #define _MAX_LENGTH_11_ 128
 
-char read_t[_MAX_LENGTH_] __aligned__;
+char read_t[_MAX_LENGTH_] align_16;
 
-uint8_t read_bit_t[_MAX_LENGTH_ / 4] __aligned__;
-uint8_t ref_bit_t[_MAX_LENGTH_ / 4] __aligned__;
-uint8_t read_bit0_t[_MAX_LENGTH_ / 8] __aligned__;
-uint8_t read_bit1_t[_MAX_LENGTH_ / 8] __aligned__;
-uint8_t ref_bit0_t[_MAX_LENGTH_11_ / 8] __aligned__;
-uint8_t ref_bit1_t[_MAX_LENGTH_11_ / 8] __aligned__;
+uint8_t read_bit_t[_MAX_LENGTH_ / 4] align_16;
+uint8_t ref_bit_t[_MAX_LENGTH_ / 4] align_16;
+uint8_t read_bit0_t[_MAX_LENGTH_ / 8] align_16;
+uint8_t read_bit1_t[_MAX_LENGTH_ / 8] align_16;
+uint8_t ref_bit0_t[_MAX_LENGTH_11_ / 8] align_16;
+uint8_t ref_bit1_t[_MAX_LENGTH_11_ / 8] align_16;
 
 void help(const char* progname) {
 	int i;

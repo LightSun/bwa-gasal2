@@ -34,18 +34,14 @@
 #include <assert.h>
 #endif
 
-#ifdef ALIGN_DATA
-#	define __aligned__ __attribute__((aligned(16)))
-#else
-#	define __aligned__
-#endif
+#include "common.h"
 
 #define MAX_CHUNKS 2048
 
-uint8_t buffer[16*MAX_CHUNKS] __aligned__;
+uint8_t buffer[16*MAX_CHUNKS] align_16;
 
 // lookup for SSE
-uint8_t POPCOUNT_4bit[16] __aligned__ = {
+uint8_t POPCOUNT_4bit[16] align_16 = {
 	/* 0 */ 0,
 	/* 1 */ 1,
 	/* 2 */ 1,
@@ -68,7 +64,7 @@ uint8_t POPCOUNT_4bit[16] __aligned__ = {
 // ---- lookup[256] -------------------------------------------------------
 
 // uint32_t instead of uint8_t, to avoid zero-extend
-uint32_t POPCOUNT_8bit[256] __aligned__ = {
+uint32_t POPCOUNT_8bit[256] align_16 = {
 	/* 0 */ 0, /* 1 */ 1, /* 2 */ 1, /* 3 */ 2,
 	/* 4 */ 1, /* 5 */ 2, /* 6 */ 2, /* 7 */ 3,
 	/* 8 */ 1, /* 9 */ 2, /* a */ 2, /* b */ 3,

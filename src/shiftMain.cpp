@@ -9,7 +9,7 @@
 #include "mask.h"
 #include <stdio.h>
 
-uint8_t buff[32] __aligned__;
+uint8_t buff[32] align_16;
 
 int main(int argc, char* argv[]) {
 	int shift_num = 0;

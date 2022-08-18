@@ -15,8 +15,9 @@
 #include "popcount.h"
 #include "bit_convert.h"
 #include "mask.h"
+#include "common.h"
 
-uint8_t MASK_01[32] __aligned__ = { 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
+uint8_t MASK_01[32] align_16 = { 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
 		0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
 		0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
 		0x55 };
@@ -548,13 +549,13 @@ int bit_vec_filter_m128_sse11(uint8_t *read_vec, uint8_t *ref_vec, int length,
 
 #define _MAX_LENGTH_ 320
 
-uint8_t read_bit_t[_MAX_LENGTH_ / 4 + 16] __aligned__;
-uint8_t ref_bit_t[_MAX_LENGTH_ / 4 + 16] __aligned__;
+uint8_t read_bit_t[_MAX_LENGTH_ / 4 + 16] align_16;
+uint8_t ref_bit_t[_MAX_LENGTH_ / 4 + 16] align_16;
 
-uint8_t read_vec0_t[SSE_BYTE_NUM] __aligned__;
-uint8_t read_vec1_t[SSE_BYTE_NUM] __aligned__;
-uint8_t ref_vec0_t[SSE_BYTE_NUM] __aligned__;
-uint8_t ref_vec1_t[SSE_BYTE_NUM] __aligned__;
+uint8_t read_vec0_t[SSE_BYTE_NUM] align_16;
+uint8_t read_vec1_t[SSE_BYTE_NUM] align_16;
+uint8_t ref_vec0_t[SSE_BYTE_NUM] align_16;
+uint8_t ref_vec1_t[SSE_BYTE_NUM] align_16;
 
 int bit_vec_filter_sse1(char* read, char* ref, int length, int max_error) {
 	//Get ready the bits
